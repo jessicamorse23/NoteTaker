@@ -23,8 +23,10 @@ const hide = (elem) => {
 };
 
 // activeNote is used to keep track of the note in the textarea
+// empty curly braces declaring an object filled with the Active Note
 let activeNote = {};
 
+// getting notes from application
 const getNotes = () =>
   fetch('/api/notes', {
     method: 'GET',
@@ -33,6 +35,7 @@ const getNotes = () =>
     },
   });
 
+  // saving user note data 
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -42,6 +45,7 @@ const saveNote = (note) =>
     body: JSON.stringify(note),
   });
 
+  // create an id when deleting note to access later?
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
     method: 'DELETE',
@@ -66,6 +70,7 @@ const renderActiveNote = () => {
   }
 };
 
+// behavior on save note - display new note and display active notes
 const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
@@ -116,6 +121,7 @@ const handleRenderSaveBtn = () => {
   }
 };
 
+// async await 
 // Render the list of note titles
 const renderNoteList = async (notes) => {
   let jsonNotes = await notes.json();
@@ -123,6 +129,7 @@ const renderNoteList = async (notes) => {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
 
+  // array for list of notes
   let noteListItems = [];
 
   // Returns HTML element with or without a delete button
@@ -135,6 +142,7 @@ const renderNoteList = async (notes) => {
     spanEl.innerText = text;
     spanEl.addEventListener('click', handleNoteView);
 
+    // appends the list item to the list element
     liEl.append(spanEl);
 
     if (delBtn) {
