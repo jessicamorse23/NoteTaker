@@ -1,35 +1,33 @@
+const api = require("express").Router();
 const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
-module.exports = (app) => {
-  app.get("/api/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, "/db/db.json"));
-    console.log("notes saved");
-  });
+const filePath = path.join(__dirname, ".db/db.json");
 
-  app.post("/api/notes", (req, res) => {
-    console.info(`${req.method} request received to add a note`);
+api.get("/notes", (req, res) => {
+  res.sendFile(filePath);
+});
 
-    const { username, note } = req.body;
+api.post("/notes", (req, res) => {
+  const { title, text } = req.body;
 
-    if (req.body) {
-      const newNote = {
-        username,
-        note,
-        note_id: uuid(),
-      };
+  const newNote = {
+    title,
+    text,
+    id: uuidv4(),
+  };
 
-      readAndAppend(newNote, "./db/db.json");
-      res.json(`Note added successfully 🚀`);
+  fs.readFile(filePath, "utf-8", (err, data) => {
+    if (err) {
+      console.error(err);
     } else {
-      res.error("Error in adding note");
+      const parsedData = JSON.parse(data);
+
+      parsedData.push(newNote);
+      fs.writeFile("./db/db.json", JSON.stringify(parsedNotes, null, 4), (err) => {
+        err ? console.log(err) : console.log("successfully added note");
+      });
     }
   });
-
-  app.get("/api/feedback", (req, res) => {
-    console.info(`${req.method} request received for feedback`);
-
-    readFromFile("./db/feedback.json").then((data) => res.json(JSON.parse(data)));
-  });
-};
+});
