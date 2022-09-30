@@ -45,7 +45,7 @@ const saveNote = (note) =>
     body: JSON.stringify(note),
   });
 
-  // create an id when deleting note to access later?
+  // create an id when deleting note to access later? Need unique id npm?
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
     method: 'DELETE',
