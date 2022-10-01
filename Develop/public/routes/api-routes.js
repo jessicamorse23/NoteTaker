@@ -1,40 +1,54 @@
-const api = require("express").Router();
-let { notes } = require("..db/db.json");
-const path = require("path");
+// const api = require("express").Router();
+// const path = require("path");
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
+const uuid = require("uuid");
+const db = require("./db/db.json");
 
-// GET notes
-api.get("/notes", (req, res) => {
-  res.json(notes);
+
+module.exports = (app) => {
+  // API GET request
+  app.get("/api/notes", function (req, res) {
+      res.json(db);
+      fs.readFile(__dirname + "/../db/db.json", (err, data) => {
+      if (err) throw err;
+      res.json(JSON.parse(data));
+      });
+  });
+
+// API POST request
+app.post("/api/notes", (req, res) => {
+  let allNotes = [];
+  let newNote = {
+      title: req.body.title,
+      text: req.body.text,
+      id: uuid(),
+  }
+  fs.readFile(__dirname + "/../db/db.json", (err, data) => {
+      if (err) throw err;
+      allNotes = JSON.parse(data);
+      allNotes.push(newNote);
+      fs.writeFile(__dirname + "/../db/db.json", JSON.stringify(allNotes), "utf-8", (err) => {
+          if (err) throw err;
+          console.log("The note has been saved.")
+          res.end();
+      })
+  })
+  console.log(newNote)
 });
 
-// new note with UUID
-api.post("/notes", (req, res) => {
+// API DELETE Request
+  app.delete("/api/notes/:id", (req, res) => {
+      let noteId = req.params.id;
+      fs.readFile(__dirname + "/../db/db.json", (err, data) => {
+          if (err) throw err;
+          let notesDB = JSON.parse(data);
+          const filteredNotes = notesDB.filter(values => values.id != noteId);
+          fs.writeFile(__dirname + "/../db/db.json", JSON.stringify(filteredNotes), "utf-8", err => {
+              if (err) throw err;
+              console.log("The note has been deleted.")
+              res.end();
+          });
+      });
+  });
+};
 
-  const newNote = {
-    title: req.body.title,
-    text: req.body.text,
-    id: uuidv4(),
-  }
-
-  if(!validateNoteType(newNote)) {
-    return res.status(400).send("Give your note a title and some details.");
-  } else { 
-    addNewNote(newNote, notes);
-    res.json(notes);
-  }
-});
-api.delete("/notes/:id", (req, res) => {
-  const exists = notes.some(notes => notes.id === req.params.id);
-  if(exists) {
-    notes = notes.filter(note => note.id !== req.params.id);
-    fs.writeFileSync(path.join(__dirname, "../db/db.json"), JSON.stringify({
-      notes
-    }, null, 2));
-    res.json(notes);
-  } else { 
-    res.status(400).send("Note not found.")
-  }
-});
-module.exports = apiRoutes;
