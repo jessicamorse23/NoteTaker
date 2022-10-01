@@ -1,18 +1,18 @@
 const htmlRoute = require("express").Router();
 const path = require("path");
 
-// GET Route for homepage
-htmlRoute.get("/", (req, res) =>
-res.sendFile(path.join(__dirname, "../public/index.html"))
-);
-
-// route to notes.html
-htmlRoute.get("/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public.notes.html"));
+//route to notes.html
+app.get("/notes", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public/notes.html"));
 });
 
-// GET route for *
-htmlRoute.get("*", (req, res) => 
-res.sendFile(path.join(__dirname), "../public/index.html"));
+//route to read the `db.json` file and return all saved notes as JSON.
+app.get("/api/notes", (req, res) => {
+  res.sendFile(path.join(__dirname, "/db/db.json"));
+});
 
-module.exports = htmlRoute
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/index.html"));
+});
+
+module.exports = htmlRoutes

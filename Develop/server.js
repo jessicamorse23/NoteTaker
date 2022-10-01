@@ -1,22 +1,15 @@
-const express = require('express');
-const fs = require('fs');
-
-// Helper method for generating unique ids
-// const uuid = require('./helpers/uuid');
+const express = require("express");
+const path =require("path");
 
 const PORT = process.env.PORT || 3001;
-
 const app = express();
+const apiRoutes = require("./public/routes/api-routes");
+const htmlRoutes = require("./public/routes/html-routes");
 
-// Middleware for parsing JSON and urlencoded form data
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.json());
+app.use(express.static(path.join (__dirname, "public")));
 
-// require('./routes/apiRoutes')(app);
-// require('./routes/htmlRoutes')(app);
-
-// app listener - starts the server
-app.listen(PORT, () => {
-  console.log(`Server available at localhost${PORT}`);
+app.listen(PORT, () => { 
+  console.log(`App listening on: ${PORT}`);
 });
